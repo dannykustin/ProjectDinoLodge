@@ -22,7 +22,7 @@ function RoundUpdate (){
       </h1>
       
       <form>
-        <div>Team This Round: GREYSON RULLLLEEZZZZZ</div>
+        <div>Team This Round: GREYSON RULLLLEEZZZZZ THIS TIME FOR REAL</div>
 
         <label>Red: 
           <input type="radio" ></input>
