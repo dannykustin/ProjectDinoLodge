@@ -2,9 +2,71 @@ import React, { useState, useEffect } from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
 
-function RoundUpdate (){
+//Creates empty player array
+const PlayerArray = []
+var playerCreated = 0;
 
-  //const CodeWords = ["test1", "test2", "test3"];
+//Creates the player object
+function createPlayer (){
+
+  //Builds new player object
+  const newPlayer = {
+    name: "Test", //playerInfo.name,
+    score: 0,
+    currentTeam: "Red", //playerInfo.team,
+  };
+
+  //Adds new player to the player array
+  PlayerArray.push(newPlayer);
+
+  console.log(PlayerArray);
+
+  //Updates to say that this player was created
+  playerCreated = 1;
+
+}
+
+//Creates player profile interface
+function PlayerHTML (){
+  return (
+    < >
+      <label> 
+        Name: <input type="text" ></input>
+      </label>
+      <input type="button" value="Submit" onClick={createPlayer}></input>
+    </ > 
+  )
+} 
+
+//Creates the Team selection inferface
+function TeamHTML (){
+
+   //Stores team value
+   const [teamVal, setTeamVal] = useState("");
+
+   useEffect(() => {
+    console.log("Team Updated");
+  },);
+
+  return (
+    < >
+      <div>Team This Round: 
+
+        <label> Red: 
+          <input type="text" value={teamVal} onChange={e => setTeamVal(e.target.value)}></input>
+        </label>
+
+        <label> Blue: 
+          <input type="text" value={teamVal} onChange={e => setTeamVal(e.target.value)}></input>
+        </label>
+
+      </div>
+    </ >
+  )
+}
+
+//Creates the each round's control inferface
+function RoundHTML (props){
 
   //Stores round value
   const [roundVal, setRoundVal] = useState("");
@@ -16,30 +78,18 @@ function RoundUpdate (){
   //Creates Round Info
   return(
     < >
-      <h1> 
+      <label> 
         Round Number: 
         <input type="number" value={roundVal} onChange={e => setRoundVal(e.target.value)}></input>
-      </h1>
+      </label>
       
       <form>
-        <div>Team This Round: GREYSON RULLLLEEZZZZZ THIS TIME FOR REAL</div>
-
-        <label>Red: 
-          <input type="radio" ></input>
-        </label>
-
-        <label>Blue: 
-          <input type="radio" ></input>
-        </label>
-
-        <br />
-        <br />
 
         <label>
-          Players In This Round: <input type="number"></input>
+          Players In This Round: {PlayerArray.length}
         </label>
 
-        <br />
+        <TeamHTML />
 
         <input type="button" value="Submit"></input>
       </form> 
@@ -75,19 +125,34 @@ function Result (){
   )
 }
 
+//Send Kill code to another player
 function KillCode (number){
-  console.log("Kill Code " + number);
+  //console.log("Kill Code " + number);
 }
 
+//Sends Save code to another player
 function SaveCode (){
-  console.log("Save Code");
+  //console.log("Save Code");
 }
 
 //Compiles everything for final render
-function App() {
+function App(props) {
   return(
     < >
-      <RoundUpdate />
+
+<PlayerHTML />
+
+    <div>
+      {playerCreated === 0 ? (
+          <RoundHTML />
+          
+        ) : playerCreated === 1 ? (
+          <PlayerHTML />
+        ) : (
+          <h1>Error Please Reload</h1>
+      )}
+    </div>
+      
       <br />
       <br />
       <CodeSend />
