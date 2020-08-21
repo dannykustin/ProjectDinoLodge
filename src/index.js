@@ -22,6 +22,15 @@ const playerArray = [
     codeSendLog: [],
     codeReceiveLog: [],
   },
+  {
+    id: 2,
+    name: "Player 3",
+    score: 0, 
+    currentTeam: "Red",
+    previousTeams: [],
+    codeSendLog: [],
+    codeReceiveLog: [],
+  },
 
 ];
 
@@ -38,10 +47,9 @@ class CreatePlayerHTMl extends React.Component {
     this.state = {
       name: '',
       team: '',
-      arraylength: 0,
     };
 
-    //Reacts way of cnnecting actions to functions I want
+    //Reacts way of connecting actions to functions I want
     this.handleInputChange = this.handleInputChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
   }
@@ -51,7 +59,6 @@ class CreatePlayerHTMl extends React.Component {
     const target = event.target;
     const value = target.value;
     const name = target.name;
-    const arraylength = playerArray.length;
 
     this.setState({
       [name]: value
@@ -59,25 +66,28 @@ class CreatePlayerHTMl extends React.Component {
 
   }
 
- 
-
   //Called when teh form is submitted
   handleSubmit(event) {
 
     //Stops the typical way this would be handled
     event.preventDefault();
 
+    //Set team using useState Hook
+    const [team, setTeam] = useState("");
+
+    //If user did not put a team or seleted random, user is randomly sorted
     if(this.state.team === "" || this.state.team === "Random" ){
+
       var teamChoose = Math.floor(Math.random() * 2);
       if(teamChoose === 0){
-        this.state.team = "Red";
+        setTeam("Red");
       }
       else{ 
         if(teamChoose === 1){
-        this.state.team = "Blue";
+        setTeam("Blue");
         }
         else{
-          this.state.team = "Error";
+          setTeam("Error");
         }
       }
         
@@ -88,20 +98,21 @@ class CreatePlayerHTMl extends React.Component {
     id: playerArray.length,
     name: this.state.name,
     score: 0, 
-    currentTeam: this.state.team,
+    currentTeam: team,
     previousTeams: [],
     codeSendLog: [],
     codeReceiveLog: [],
     };
 
-
     //Adds new player to the player array
     playerArray.push(newPlayer);
 
+    //log to determine this function works 
     console.log(playerArray);
     
   }
 
+  //Generates the atcual interface
   render() {
     return (
 
@@ -109,6 +120,7 @@ class CreatePlayerHTMl extends React.Component {
 
         <h3>Create New Player:</h3>
         <form onSubmit={this.handleSubmit}>
+
           <label>
             Name:
             <input name="name" type="text" value={this.state.name} onChange={this.handleInputChange} />
@@ -125,6 +137,7 @@ class CreatePlayerHTMl extends React.Component {
           </div>
 
           <input type="submit" value="Submit" />
+
         </form>
 
       </ >
@@ -137,10 +150,10 @@ class CreatePlayerHTMl extends React.Component {
 //Creates Admin Interface
 function AdminHTML (props){
 
-
+  //Generates the atcual interface
   return (
     < >
-        <p> Round Number: {RedCodeWordsArray[0].score} </p>
+        <p> Round Number: </p>
         <div> Players In This Round: {playerArray.length} </div>
 
         <br></br>
@@ -152,83 +165,138 @@ function AdminHTML (props){
 
 
 //Send Kill code to another player
-function KillCode (){
-  console.log("Kill Code");
+function KillCode (props){
+
+  //Fills the variables to be used in function
+  const idArray = props.idArray;
+  const senderId = idArray[0];
+  const recieverId = idArray[1]; 
+
+  //log to determine this function works 
+  console.log("Sent From " + playerArray[senderId].name + " to " + playerArray[recieverId].name );
 }
 
 //Sends Save code to another player
-function SaveCode (){
-  console.log("Save Code");
+function SaveCode (props){
+  //Fills the variables to be used in function
+  const idArray = props.idArray;
+  const senderId = idArray[0];
+  const recieverId = idArray[1]; 
+
+  //log to determine this function works 
+  console.log("Sent From " + playerArray[senderId].name + " to " + playerArray[recieverId].name );
 }
+
+//Send Kill code to another player
+function CodeSendButtons (props){
+
+  //Fills the variables to be used in function
+  const name = props.name;
+  const idArray = [props.senderId, props.recieverId];
+
+  //Generates the atcual interface
+  return(
+    < >
+      <p> {name} </p>
+      <input type="button" value="Kill" onClick={() => KillCode( {idArray} )}></input>
+      <input type="button" value="Save" onClick={() => SaveCode( {idArray} )}></input>
+    </ >
+  );
+  
+}
+
 
 //Creates buttons to Kill and Save Players
 function CodeSend (props){
 
+  //Gets the players ID
   const numberID = props.id;
 
-  /*
-  if(numberID === 0 ){
-    numberID = 1;
-  }else{
-    numberID = 0;
-  }
+  //creates empty array to be filled with codesend info
+  const codeSendPlayer = [];
   
-  */
+  //Goes through the player array and isolates each player
+  for(const player of playerArray){
 
+    //Avoids adding player if it the same as the player sending code
+    if( !(player.id === numberID) ){
+      
+      //Adds the player info to the kill save place
+      codeSendPlayer.push( 
+        <CodeSendButtons 
+          key={player.id} 
+          name={player.name} 
+          recieverId={player.id}
+          senderId={props.id} 
+        /> 
+      );  
+    }
+
+  }
+
+  //Generates the atcual interface
   return(
     < >
-      <p>Player: {playerArray[numberID].name} </p>
-      <input type="button" value="Kill" onClick={KillCode}></input> 
-      <input type="button" value="Save" onClick={SaveCode}></input>
+      {codeSendPlayer}
     </>
   )
 }
 
 //Creates the each round's control inferface
-const RoundHTML = ({currentTeam, id}) => {
+class RoundHTML extends React.Component {
+  render(){
+    
+    //The variables needed fore the interface creation
+    const { currentTeam } = this.props;
+    const { id } = this.props;
 
-  const newCodeWord = RedCodeWordsArray[0];
+    //Pulls the codeword from the correct code word array
+    const newCodeWord = currentTeam === "Red" ? RedCodeWordsArray[0] : BlueCodeWordsArray[0];
 
-  /* Will need to determine what team player is on
+    //Generates the atcual interface
+    return(
+      < >
+        <p>Current Team: {currentTeam}</p>
 
-  const [newCodeWord, setCodeWord] = useState("");
+        <p>Code Word: {newCodeWord}</p>
 
-  if({currentTeam} === "Red"){
-    setCodeWord(RedCodeWordsArray[0]);
-  }else{
-    if({currentTeam} === "Blue"){
-      setCodeWord(BlueCodeWordsArray[0]);
-    }
-  }
-  */
-
-  //Creates Round Info
-  return(
-    < >
-      <p>Current Team: {currentTeam}</p>
-
-      <p>Code Word: {newCodeWord}</p>
-
-      <CodeSend id={id}/>
-    </>
-  )
+        <CodeSend id={id}/>
+      </>
+    )
+  } 
 }
 
 //Creates the results
-const ResultHTML = ({score}) => {
-  return(
-    < >
-      <p>Points This Round: {score}</p> 
-      <p>Total Points: {score}</p>
-    </ >
-  )
+class ResultHTML extends React.Component {
+  render (){
+
+    //The variables needed fore the interface creation
+    const { score } = this.props;
+
+    //Generates the atcual interface
+    return(
+      < >
+        <p>Points This Round: {score}</p> 
+        <p>Total Points: {score}</p>
+      </ >
+    )
+  }
+  
 }
 
 //Creates player profile interface
-const PlayerHTML = ({name, id, currentTeam, score}) => {
-  return (
+class PlayerHTML extends React.Component {
+  render (){
 
-    < >      
+    //The variables needed fore the interface creation
+    const { name } = this.props;
+    const { id } = this.props;
+    const { currentTeam } = this.props;
+    const { score } = this.props;
+
+    //Generates the atcual interface
+    return (
+      < >      
         <p>Name: {name}, id: {id}</p> 
 
         <RoundHTML currentTeam={currentTeam} id={id}/>
@@ -236,32 +304,36 @@ const PlayerHTML = ({name, id, currentTeam, score}) => {
         <ResultHTML score={score}/>
 
         <p>----------------------------------------</p>
-
-    </ >
-    
-  );
+      </ >
+    );
+  }
   
 } 
 
+//The class that creates the other player elements
+class PlayerOverview extends React.Component {
+  render (){
 
-const PlayerOverview = ({players}) => {
+    //The variables needed fore the interface creation
+    const { players } = this.props;
 
-  return (
-    < >
-      <div>
-        {players.map(
-          (player, i) => 
-            <PlayerHTML 
-              key={i}
-              name={player.name} 
-              id={player.id}
-              currentTeam={player.currentTeam}
-              score={player.score} />
-        )}
-      </div>
-    </ >
-	)
-
+    //Generates the atcual interface
+    return (
+      < >
+        <div>
+          {players.map(
+            (player, i) => 
+              <PlayerHTML 
+                key={i}
+                name={player.name} 
+                id={player.id}
+                currentTeam={player.currentTeam}
+                score={player.score} />
+          )}
+        </div>
+      </ >
+    )
+  }
 }
 
 //Compiles everything for final render
