@@ -104,14 +104,14 @@ class CreatePlayerHTMl extends React.Component {
 
       var teamChoose = Math.floor(Math.random() * 2);
       if(teamChoose === 0){
-        this.state.team === "Red";
+        this.state.team = "Red";
       }
       else{ 
         if(teamChoose === 1){
-          this.state.team === "Blue";
+          this.state.team = "Blue";
         }
         else{
-          this.state.team === "Error";
+          this.state.team = "Error";
         }
       }
         
@@ -122,7 +122,7 @@ class CreatePlayerHTMl extends React.Component {
     id: playerArray.length,
     name: this.state.name,
     score: 0, 
-    currentTeam: team,
+    currentTeam: this.state.team, //team
     previousTeams: [],
     codeSendLog: [],
     codeReceiveLog: [],
