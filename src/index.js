@@ -31,12 +31,16 @@ const playerArray = [
     codeSendLog: [],
     codeReceiveLog: [],
   },
-
 ];
 
 //Creates code words
 const RedCodeWordsArray = ["red1", "red2", "red3"];
 const BlueCodeWordsArray = ["blue1", "blue2", "blue3"];
+
+//Creates the points for the game
+const correctCodeSend = 10;
+const correctCodeGuess = 30;
+const wrongCodeSend = -5;
 
 //Creates new player and HTML for it
 class CreatePlayerHTMl extends React.Component {
@@ -170,10 +174,25 @@ function KillCode (props){
   //Fills the variables to be used in function
   const idArray = props.idArray;
   const senderId = idArray[0];
-  const recieverId = idArray[1]; 
+  const recieverId = idArray[1];
 
-  //log to determine this function works 
-  console.log("Sent From " + playerArray[senderId].name + " to " + playerArray[recieverId].name );
+  //Updates code send and code receive logs
+  playerArray[senderId].codeSendLog.push(playerArray[recieverId].name + ": Kill");
+  playerArray[recieverId].codeReceiveLog.push(playerArray[senderId].name + ": Kill");
+
+  //Determines if the sender and reciever are the same team
+  if( playerArray[senderId].currentTeam ===  playerArray[recieverId].currentTeam){
+
+    //Adds the wrong code value to the score
+    playerArray[senderId].score = playerArray[senderId].score + wrongCodeSend;
+
+  }else{
+    //Adds the correct code value to the score
+    playerArray[senderId].score = playerArray[senderId].score + correctCodeSend;
+
+  }
+
+  console.log(playerArray);
 }
 
 //Sends Save code to another player
@@ -183,8 +202,23 @@ function SaveCode (props){
   const senderId = idArray[0];
   const recieverId = idArray[1]; 
 
-  //log to determine this function works 
-  console.log("Sent From " + playerArray[senderId].name + " to " + playerArray[recieverId].name );
+  //Updates code send and code receive logs
+  playerArray[senderId].codeSendLog.push(playerArray[recieverId].name + ": Save");
+  playerArray[recieverId].codeReceiveLog.push(playerArray[senderId].name + ": Save");
+
+   //Determines if the sender and reciever are the same team
+   if( playerArray[senderId].currentTeam ===  playerArray[recieverId].currentTeam){
+
+    //Adds the correct code value to the score
+    playerArray[senderId].score = playerArray[senderId].score + correctCodeSend;
+
+  }else{
+    //Adds the wrong code value to the score
+    playerArray[senderId].score = playerArray[senderId].score + wrongCodeSend;
+
+  }
+
+  console.log(playerArray);
 }
 
 //Send Kill code to another player
@@ -297,7 +331,7 @@ class PlayerHTML extends React.Component {
     //Generates the atcual interface
     return (
       < >      
-        <p>Name: {name}, id: {id}</p> 
+        <p>Name: {name} </p> 
 
         <RoundHTML currentTeam={currentTeam} id={id}/>
           
