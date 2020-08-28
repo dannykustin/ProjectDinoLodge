@@ -76,7 +76,8 @@ class CreatePlayerHTMl extends React.Component {
     //Stops the typical way this would be handled
     event.preventDefault();
 
-    //Set team using useState Hook
+    /*To stop error with Invaild Hook Call, need to investigate later
+    Set team using useState Hook
     const [team, setTeam] = useState("");
 
     //If user did not put a team or seleted random, user is randomly sorted
@@ -92,6 +93,25 @@ class CreatePlayerHTMl extends React.Component {
         }
         else{
           setTeam("Error");
+        }
+      }
+        
+    }
+    */
+
+    //If user did not put a team or seleted random, user is randomly sorted
+    if(this.state.team === "" || this.state.team === "Random" ){
+
+      var teamChoose = Math.floor(Math.random() * 2);
+      if(teamChoose === 0){
+        this.state.team === "Red";
+      }
+      else{ 
+        if(teamChoose === 1){
+          this.state.team === "Blue";
+        }
+        else{
+          this.state.team === "Error";
         }
       }
         
